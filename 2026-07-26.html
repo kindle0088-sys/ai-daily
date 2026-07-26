@@ -24,10 +24,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 .hero-stat .stat-label{font-size:0.7rem;color:#94a3b8;margin-top:2px}
 
 .nav-bar{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
-.nav-inner{max-width:1200px;margin:0 auto;display:flex;gap:0;padding:0 16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:0;padding:0 16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .nav-inner::-webkit-scrollbar{height:0}
 .nav-item{flex-shrink:0;padding:14px 20px;font-size:0.85rem;font-weight:500;color:#64748b;text-decoration:none;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap}
 .nav-item:hover{color:#6366f1}
+.nav-date-select{margin-left:auto;flex-shrink:0;padding:8px 0 8px 12px;border-left:1px solid #e2e8f0}
+.nav-date-select select{appearance:none;-webkit-appearance:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:6px 28px 6px 12px;font-size:0.8rem;color:#334155;cursor:pointer;font-family:inherit;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;min-width:130px}
+.nav-date-select select:hover{border-color:#c7d2fe}
+.nav-date-select select:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 2px rgba(99,102,241,0.15)}
 
 .main{max-width:1200px;margin:0 auto;padding:32px 16px 48px}
 .section{margin-bottom:40px}
@@ -61,6 +65,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
   .hero-stat .stat-num{font-size:1.2rem}
   .card-grid{grid-template-columns:1fr}
   .nav-item{padding:12px 14px;font-size:0.8rem}
+  .nav-date-select select{min-width:120px;font-size:0.75rem;padding:5px 26px 5px 10px}
   .back-top{bottom:20px;right:20px}
 }
 </style>
@@ -73,11 +78,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
     <h1>AI 日报</h1>
     <div class="hero-date">2026年7月26日</div>
     <div class="hero-note">今日(2026-07-26)日报仅17条，合并昨日(2026-07-25)完整日报</div>
-    <div class="hero-total">13 <small>条</small></div>
+    <div class="hero-total">17 <small>条</small></div>
     <div class="hero-stats">
       <div class="hero-stat">
         <div class="stat-num" style="color:#6366f1">5</div>
         <div class="stat-label">模型发布/更新</div>
+      </div>
+      <div class="hero-stat">
+        <div class="stat-num" style="color:#0ea5e9">4</div>
+        <div class="stat-label">产品发布/更新</div>
       </div>
       <div class="hero-stat">
         <div class="stat-num" style="color:#f59e0b">4</div>
@@ -91,7 +100,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 </header>
 
 <nav class="nav-bar">
-  <div class="nav-inner"><a href="#sec-models" class="nav-item">模型发布/更新</a><a href="#sec-industry" class="nav-item">行业动态</a><a href="#sec-tip" class="nav-item">技巧与观点</a></div>
+  <div class="nav-inner"><a href="#sec-models" class="nav-item">模型发布/更新</a><a href="#sec-products" class="nav-item">产品发布/更新</a><a href="#sec-industry" class="nav-item">行业动态</a><a href="#sec-tip" class="nav-item">技巧与观点</a></div>
 </nav>
 
 <main class="main">
@@ -180,6 +189,75 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
       </div>
     </div>
   </section>
+  <section class="section" id="sec-products">
+    <div class="section-header" style="border-bottom-color:#0ea5e9;">
+      <h2>产品发布/更新</h2>
+      <span class="section-count">4 条</span>
+    </div>
+    <div class="card-grid">
+
+      <div class="card" style="border-top: 3px solid #0ea5e9;">
+        <div class="card-num" style="color:#a5f3fc">06</div>
+        <div class="card-header">
+          <div class="card-title">Runway Agent 推出自然语言工作流功能</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip" style="background:#ecfeff; color:#0ea5e9">X：Runway (@runwayml)</span>
+          
+        </div>
+        <p class="card-summary">在 Runway Agent 中引入工作流。现在你可以通过自然语言构建、运行或编辑基于节点的工作流。工作流可大规模解锁高…</p>
+        <a class="card-link" href="https://x.com/runwayml/status/2080649234672439389" target="_blank" rel="noopener noreferrer" style="color:#0ea5e9">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card" style="border-top: 3px solid #0ea5e9;">
+        <div class="card-num" style="color:#a5f3fc">07</div>
+        <div class="card-header">
+          <div class="card-title">百度搭子更新：电脑手机接力、桌面端内嵌浏览器上线，复杂任务可跨端连续执行</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip" style="background:#ecfeff; color:#0ea5e9">公众号：百度智能云（文心）</span>
+          
+        </div>
+        <p class="card-summary">百度搭子在近期AI Day上推出多项升级，支持电脑与手机双端互联，同步任务上下文与执行进度，用户可跨设备接力完成复杂工作…</p>
+        <a class="card-link" href="https://mp.weixin.qq.com/s/HRySK1LU53clPe2I_M-Fug" target="_blank" rel="noopener noreferrer" style="color:#0ea5e9">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card" style="border-top: 3px solid #0ea5e9;">
+        <div class="card-num" style="color:#a5f3fc">08</div>
+        <div class="card-header">
+          <div class="card-title">OpenRouter 推出 Classifiers 测试版：自动标记 AI 请求的用途与成本归属</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip" style="background:#ecfeff; color:#0ea5e9">OpenRouter：Announcements（RSS）</span>
+          
+        </div>
+        <p class="card-summary">OpenRouter 上线 Classifiers 测试版，允许用户通过自定义分类法（最多 8 个维度）自动标记每次 A…</p>
+        <a class="card-link" href="https://openrouter.ai/blog/announcements/classifiers" target="_blank" rel="noopener noreferrer" style="color:#0ea5e9">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card" style="border-top: 3px solid #0ea5e9;">
+        <div class="card-num" style="color:#a5f3fc">09</div>
+        <div class="card-header">
+          <div class="card-title">Claude Code v2.1.219 发布：新增 Claude Opus 5，支持 1M 上下文与嵌套子智能体</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip" style="background:#ecfeff; color:#0ea5e9">Claude Code：GitHub Releases（RSS）</span>
+          
+        </div>
+        <p class="card-summary">Claude Code v2.1.219 新增 Claude Opus 5 作为默认 Opus 模型，支持 1M 上下文…</p>
+        <a class="card-link" href="https://github.com/anthropics/claude-code/releases/tag/v2.1.219" target="_blank" rel="noopener noreferrer" style="color:#0ea5e9">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+    </div>
+  </section>
   <section class="section" id="sec-industry">
     <div class="section-header" style="border-bottom-color:#f59e0b;">
       <h2>行业动态</h2>
@@ -188,7 +266,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
     <div class="card-grid">
 
       <div class="card" style="border-top: 3px solid #f59e0b;">
-        <div class="card-num" style="color:#fde68a">06</div>
+        <div class="card-num" style="color:#fde68a">10</div>
         <div class="card-header">
           <div class="card-title">新报告揭示OpenAI在Hugging Face自主黑客事件中失控的严重程度</div>
         </div>
@@ -203,7 +281,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
         </a>
       </div>
       <div class="card" style="border-top: 3px solid #f59e0b;">
-        <div class="card-num" style="color:#fde68a">07</div>
+        <div class="card-num" style="color:#fde68a">11</div>
         <div class="card-header">
           <div class="card-title">英伟达、微软和Meta联合警告：应避免对开放权重模型过度监管</div>
         </div>
@@ -218,7 +296,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
         </a>
       </div>
       <div class="card" style="border-top: 3px solid #f59e0b;">
-        <div class="card-num" style="color:#fde68a">08</div>
+        <div class="card-num" style="color:#fde68a">12</div>
         <div class="card-header">
           <div class="card-title">微软阐述开源模型助力美国竞争力路径</div>
         </div>
@@ -233,7 +311,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
         </a>
       </div>
       <div class="card" style="border-top: 3px solid #f59e0b;">
-        <div class="card-num" style="color:#fde68a">09</div>
+        <div class="card-num" style="color:#fde68a">13</div>
         <div class="card-header">
           <div class="card-title">Kimi K3 在网络安全漏洞利用测试中大幅落后美国前沿模型，知识蒸馏或为原因</div>
         </div>
@@ -257,7 +335,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
     <div class="card-grid">
 
       <div class="card" style="border-top: 3px solid #ec4899;">
-        <div class="card-num" style="color:#fbcfe8">10</div>
+        <div class="card-num" style="color:#fbcfe8">14</div>
         <div class="card-header">
           <div class="card-title">Claude-thermos：保持 Claude 会话缓存热度，避免重新编码费用</div>
         </div>
@@ -272,7 +350,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
         </a>
       </div>
       <div class="card" style="border-top: 3px solid #ec4899;">
-        <div class="card-num" style="color:#fbcfe8">11</div>
+        <div class="card-num" style="color:#fbcfe8">15</div>
         <div class="card-header">
           <div class="card-title">Claude 5 代模型上下文工程新规则：Claude Code 系统提示词精简超 80%</div>
         </div>
@@ -287,7 +365,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
         </a>
       </div>
       <div class="card" style="border-top: 3px solid #ec4899;">
-        <div class="card-num" style="color:#fbcfe8">12</div>
+        <div class="card-num" style="color:#fbcfe8">16</div>
         <div class="card-header">
           <div class="card-title">Claude Design 产品设计师 Nate Parrott 分享如何用其探索视觉创意</div>
         </div>
@@ -302,7 +380,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
         </a>
       </div>
       <div class="card" style="border-top: 3px solid #ec4899;">
-        <div class="card-num" style="color:#fbcfe8">13</div>
+        <div class="card-num" style="color:#fbcfe8">17</div>
         <div class="card-header">
           <div class="card-title">Claude 模型家族详解：如何为工作负载选择最佳模型</div>
         </div>
@@ -321,7 +399,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 </main>
 
 <footer class="footer">
-  <p>共 <strong>13</strong> 条 AI 动态 · 数据来源：<strong>AI HOT</strong>（aihot.virxact.com）· 自动生成于 2026/7/26 23:12:09</p>
+  <p>共 <strong>17</strong> 条 AI 动态 · 数据来源：<strong>AI HOT</strong>（aihot.virxact.com）· 自动生成于 2026/7/26 23:20:26</p>
 </footer>
 
 <button class="back-top" id="backTop" title="回到顶部">↑</button>
@@ -334,6 +412,8 @@ sections.forEach(s=>obs.observe(s));
 const bt=document.getElementById('backTop');
 window.addEventListener('scroll',()=>bt.classList.toggle('visible',window.scrollY>400));
 bt.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+const ds=document.getElementById('dateSelector');
+if(ds)ds.addEventListener('change',function(){window.location.href=this.value});
 </script>
 </body>
 </html>
