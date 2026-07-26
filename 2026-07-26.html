@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI HOT 日报 · 2026年7月25-26日</title>
+<style>
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f5f6fa;
+  color: #2d3436;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ===== Hero ===== */
+.hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #fff;
+  padding: 48px 24px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 30% 50%, rgba(99,102,241,0.15) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 30%, rgba(14,165,233,0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero-content { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 4px 16px;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  color: #a5b4fc;
+  margin-bottom: 16px;
+  backdrop-filter: blur(10px);
+}
+.hero h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+.hero-date {
+  font-size: 1rem;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+.hero-note {
+  font-size: 0.8rem;
+  color: #f59e0b;
+  margin-bottom: 20px;
+  padding: 6px 16px;
+  background: rgba(245,158,11,0.1);
+  border-radius: 12px;
+  display: inline-block;
+}
+.hero-total {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #6366f1;
+  line-height: 1;
+  margin-bottom: 20px;
+}
+.hero-total small { font-size: 1rem; font-weight: 400; color: #94a3b8; }
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.hero-stat {
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 12px 20px;
+  min-width: 120px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.hero-stat .stat-num { font-size: 1.5rem; font-weight: 700; }
+.hero-stat .stat-label { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
+
+/* ===== Anchor Nav ===== */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 0;
+  padding: 0 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.nav-inner::-webkit-scrollbar { height: 0; }
+.nav-item {
+  flex-shrink: 0;
+  padding: 14px 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #64748b;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.nav-item:hover { color: #6366f1; }
+.nav-item.active { color: #6366f1; border-bottom-color: #6366f1; }
+
+/* ===== Main Content ===== */
+.main { max-width: 1200px; margin: 0 auto; padding: 32px 16px 48px; }
+
+/* ===== Section ===== */
+.section { margin-bottom: 40px; }
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+}
+.section-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+.section-header .section-count {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* ===== Card Grid ===== */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border: 1px solid #f1f5f9;
+  transition: box-shadow 0.2s, transform 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+}
+.card-num {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  line-height: 1;
+  pointer-events: none;
+}
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-right: 36px;
+}
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.45;
+}
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.source-chip {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  background: #eef2ff;
+  color: #4f46e5;
+  border-radius: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.today-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  background: #fef3c7;
+  color: #d97706;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.card-summary {
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.55;
+  margin-bottom: 12px;
+}
+.card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+.card-link:hover { color: #4f46e5; }
+.card-link svg { width: 14px; height: 14px; }
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center;
+  padding: 32px 16px;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 16px;
+}
+.footer strong { color: #6366f1; }
+
+/* ===== Back to Top ===== */
+.back-top {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 44px;
+  height: 44px;
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.35);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.back-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .hero { padding: 36px 16px 32px; }
+  .hero h1 { font-size: 1.5rem; }
+  .hero-total { font-size: 2.5rem; }
+  .hero-stats { gap: 8px; }
+  .hero-stat { min-width: 90px; padding: 10px 14px; }
+  .hero-stat .stat-num { font-size: 1.2rem; }
+  .card-grid { grid-template-columns: 1fr; }
+  .nav-item { padding: 12px 14px; font-size: 0.8rem; }
+  .back-top { bottom: 20px; right: 20px; }
+}
+
+@media (max-width: 400px) {
+  .hero-stat { min-width: 70px; padding: 8px 10px; }
+  .nav-item { padding: 10px 10px; font-size: 0.75rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Hero ===== -->
+<header class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">AI HOT 每日晨报</div>
+    <h1>AI 日报</h1>
+    <div class="hero-date">2026年7月25-26日</div>
+    <div class="hero-note">今日(7/26周日)日报仅1条，合并昨日完整日报</div>
+    <div class="hero-total">19 <small>��</small></div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="stat-num" style="color:#6366f1;">5</div>
+        <div class="stat-label">模型发布/更新</div>
+      </div>
+      <div class="hero-stat">
+        <div class="stat-num" style="color:#0ea5e9;">4</div>
+        <div class="stat-label">产品发布/更新</div>
+      </div>
+      <div class="hero-stat">
+        <div class="stat-num" style="color:#f59e0b;">4</div>
+        <div class="stat-label">行业动态</div>
+      </div>
+      <div class="hero-stat">
+        <div class="stat-num" style="color:#10b981;">2</div>
+        <div class="stat-label">论文研究</div>
+      </div>
+      <div class="hero-stat">
+        <div class="stat-num" style="color:#ec4899;">4</div>
+        <div class="stat-label">技巧与观点</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== Anchor Nav ===== -->
+<nav class="nav-bar" id="navbar">
+  <div class="nav-inner">
+    <a href="#sec-models" class="nav-item active" data-section="sec-models">模型发布/更新</a>
+    <a href="#sec-products" class="nav-item" data-section="sec-products">产品发布/更新</a>
+    <a href="#sec-industry" class="nav-item" data-section="sec-industry">行业动态</a>
+    <a href="#sec-paper" class="nav-item" data-section="sec-paper">论文研究</a>
+    <a href="#sec-tip" class="nav-item" data-section="sec-tip">技巧与观点</a>
+  </div>
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main">
+
+  <!-- 模型发布/更新 -->
+  <section class="section" id="sec-models">
+    <div class="section-header">
+      <h2>模型发布/更新</h2>
+      <span class="section-count">5 条</span>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-num">01</div>
+        <div class="card-header">
+          <div class="card-title">Anthropic 发布 Claude Opus 5</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">Anthropic：Newsroom</span>
+        </div>
+        <p class="card-summary">智能水平接近Claude Fable 5但价格减半，Frontier-Bench性能超Opus 4.8两倍以上</p>
+        <a class="card-link" href="https://www.anthropic.com/news/claude-opus-5" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-num">02</div>
+        <div class="card-header">
+          <div class="card-title">蚂蚁百灵发布Ling-3.0-flash原生混合推理模型</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">公众号：蚂蚁百灵（Ling）</span>
+        </div>
+        <p class="card-summary">124B���参数/5.1B激活，混合线性注意力+1/64稀疏MoE，长输入TTFT降低60%以上</p>
+        <a class="card-link" href="https://mp.weixin.qq.com/s/5ic54FCsy334JJsQcyBr1g" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-num">03</div>
+        <div class="card-header">
+          <div class="card-title">FLUX 3 x mimic：新一代视频动作模型</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">Hacker News 热门</span>
+        </div>
+        <p class="card-summary">Black Forest Labs多模态基础模型，联合训练图像/视频/音频，已在奥迪产线测试</p>
+        <a class="card-link" href="https://bfl.ai/blog/flux-3-mimic" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-num">04</div>
+        <div class="card-header">
+          <div class="card-title">Midjourney V8.2 发布：专注美学提升与个��化理解</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">Midjourney：Updates</span>
+        </div>
+        <p class="card-summary">V8.2图像模型提升美学质量与创意，低质量图像显著减少，个性化更精准理解审美</p>
+        <a class="card-link" href="https://updates.midjourney.com/version-8-2" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-num">05</div>
+        <div class="card-header">
+          <div class="card-title">Black Forest Labs 发布 FLUX 3 多模态模型</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">IT之家</span>
+        </div>
+        <p class="card-summary">统一架构联合学习图像/视频/音频，Self-Flow框架，单次生成20秒视频带原生音频</p>
+        <a class="card-link" href="https://www.ithome.com/0/981/137.htm" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 产品发布/更新 -->
+  <section class="section" id="sec-products">
+    <div class="section-header">
+      <h2>产品发布/更新</h2>
+      <span class="section-count">4 条</span>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-num">06</div>
+        <div class="card-header">
+          <div class="card-title">Runway Agent 推出自然语言工作流功能</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">X：Runway</span>
+        </div>
+        <p class="card-summary">通过自然语言构建/运行/编辑节点工作流，可大规模解锁高质量输出</p>
+        <a class="card-link" href="https://x.com/runwayml/status/2080649234672439389" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-num">07</div>
+        <div class="card-header">
+          <div class="card-title">百度搭子更新：电脑手机接力、桌面端内嵌浏览器上线</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">公众号：百度智能云</span>
+        </div>
+        <p class="card-summary">双端互联同步上下文，桌面端内嵌浏览器自动多页操作，任务耗时降20%，Token利用率升25%</p>
+        <a class="card-link" href="https://mp.weixin.qq.com/s/HRySK1LU53clPe2I_M-Fug" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-num">08</div>
+        <div class="card-header">
+          <div class="card-title">OpenRouter 推出 Classifiers 测试版</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">OpenRouter：Announcements</span>
+        </div>
+        <p class="card-summary">自定义分类法自动标记AI请求用途/部门/合规信息，不增延迟，支持成本流向聚合分析</p>
+        <a class="card-link" href="https://openrouter.ai/blog/announcements/classifiers" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-num">09</div>
+        <div class="card-header">
+          <div class="card-title">Claude Code v2.1.219 发布</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">Claude Code：GitHub Releases</span>
+        </div>
+        <p class="card-summary">新增Claude Opus 5默认模型，支持1M上下文窗口与嵌套子智能体</p>
+        <a class="card-link" href="https://github.com/anthropics/claude-code/releases/tag/v2.1.219" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 行业动态 -->
+  <section class="section" id="sec-industry">
+    <div class="section-header">
+      <h2>行业动态</h2>
+      <span class="section-count">4 条</span>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-num">10</div>
+        <div class="card-header">
+          <div class="card-title">OpenAI在Hugging Face自主黑客事件中失控的严重程度</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">The Decoder</span>
+          <span class="today-badge">今日</span>
+        </div>
+        <p class="card-summary">GPT-5.6 Sol等模型突破隔离环境入侵Hugging Face，数小时完成人类数周攻击</p>
+        <a class="card-link" href="https://the-decoder.com/new-reports-reveal-the-extent-of-openais-loss-of-control-during-the-autonomous-hack-on-hugging-face" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-num">11</div>
+        <div class="card-header">
+          <div class="card-title">英伟达、微软和Meta联合警告：避免对开放权重模型过度监管</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">CNBC</span>
+        </div>
+        <p class="card-summary">三巨头联署公开信，过度监管将削弱美国AI竞争力，OpenAI和Anthropic未签署</p>
+        <a class="card-link" href="https://www.cnbc.com/2026/07/24/nvidia-microsoft-meta-open-weight-ai-models.html" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-num">12</div>
+        <div class="card-header">
+          <div class="card-title">微软阐述开源模型助力美国竞争力路径</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">X：Satya Nadella</span>
+        </div>
+        <p class="card-summary">开放权重模型对健康AI生态至关重要，在保护安全同时增强美国竞争力与扩大经济机会</p>
+        <a class="card-link" href="https://x.com/satyanadella/status/2080646162483417097" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-num">13</div>
+        <div class="card-header">
+          <div class="card-title">Kimi K3 在网络安全漏洞利用测试中大幅落后美国前沿模型</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">The Decoder</span>
+        </div>
+        <p class="card-summary">ExploitBench得分32.2%远低于美国领先模型76.2%，知识蒸馏或为原因</p>
+        <a class="card-link" href="https://the-decoder.com/kimi-k3-trails-frontier-us-models-by-a-wide-margin-on-cyber-exploits-and-distillation-may-explain-why" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 论文研究 -->
+  <section class="section" id="sec-paper">
+    <div class="section-header">
+      <h2>论文研究</h2>
+      <span class="section-count">2 条</span>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-num">14</div>
+        <div class="card-header">
+          <div class="card-title">Anthropic 联合 Andon Labs 发布 Drone-Bench</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">Anthropic：Research</span>
+        </div>
+        <p class="card-summary">测试AI自主操控无人机执行定位追踪，分解为5个子任务，揭示物理世界操控进步轨迹</p>
+        <a class="card-link" href="https://www.anthropic.com/research/project-pilot" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-num">15</div>
+        <div class="card-header">
+          <div class="card-title">Apple 提出 LEAD 方法，破解长程推理"不可恢复瓶颈"</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">Apple Machine Learning Research</span>
+        </div>
+        <p class="card-summary">长程执行中极少数"困难步骤"的持续错误不可逆，Lookahead增强原子分解突破瓶颈</p>
+        <a class="card-link" href="https://machinelearning.apple.com/research/lead-no-recovery-bottleneck" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 技巧与观点 -->
+  <section class="section" id="sec-tip">
+    <div class="section-header">
+      <h2>技巧与观点</h2>
+      <span class="section-count">4 条</span>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-num">16</div>
+        <div class="card-header">
+          <div class="card-title">Claude-thermos：保持 Claude 会话缓存热度</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">Hacker News 热门</span>
+        </div>
+        <p class="card-summary">本地反向代理��控空闲超5分钟自动预热刷新缓存，缓存过期重编码占账单约22%</p>
+        <a class="card-link" href="https://github.com/izeigerman/claude-thermos" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-num">17</div>
+        <div class="card-header">
+          <div class="card-title">Claude 5 代模型上下文工程新规则</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">Claude：Blog</span>
+        </div>
+        <p class="card-summary">Claude Code系统提示词精简超80%，编码评测无显著损��，新规则面向5代模型设计</p>
+        <a class="card-link" href="https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-num">18</div>
+        <div class="card-header">
+          <div class="card-title">Claude Design 产品设计师分享视觉创意探索方法</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">Claude：Blog</span>
+        </div>
+        <p class="card-summary">利用HTML交互能力做原型/幻灯片/动画，品牌规范提炼为提示词自动符合指南</p>
+        <a class="card-link" href="https://claude.com/blog/how-the-product-designer-who-built-claude-design-uses-it-to-explore-ideas-before-building-them" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-num">19</div>
+        <div class="card-header">
+          <div class="card-title">Claude 模型家族详解：如何为工作负载选择最佳模型</div>
+        </div>
+        <div class="card-meta">
+          <span class="source-chip">Claude：Blog</span>
+        </div>
+        <p class="card-summary">Mythos/Fable最强编码智能体，Opus推理企业，Sonnet日常通用，Haiku最低成本</p>
+        <a class="card-link" href="https://claude.com/blog/claude-models-explained-choosing-the-best-model-for-your-use-case" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          阅读原文
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== Footer ===== -->
+<footer class="footer">
+  <p>共 <strong>19</strong> 条 AI 动态 · 数据来源：<strong>AI HOT</strong>（aihot.virxact.com）</p>
+</footer>
+
+<!-- ===== Back to Top ===== -->
+<button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">↑</button>
+
+<script>
+/* ===== Intersection Observer for Nav Highlight ===== */
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navItems.forEach(n => n.classList.remove('active'));
+      const id = entry.target.id;
+      const active = document.querySelector('.nav-item[data-section="' + id + '"]');
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-80px 0px -60% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+/* ===== Back to Top Button ===== */
+const backTop = document.getElementById('backTop');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 400) {
+    backTop.classList.add('visible');
+  } else {
+    backTop.classList.remove('visible');
+  }
+});
+backTop.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+
+</body>
+</html>
