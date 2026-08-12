@@ -104,8 +104,129 @@ async function fetchDaily() {
   return { daily, dateStr, fallbackNote, merged };
 }
 
+// ============= Movie Recommendation =============
+function movieCardHTML(movie, dateStr) {
+  if (!movie) return '';
+  const c = { color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe' };
+  const guide = movie.audience || '';
+  const genre = Array.isArray(movie.genre) ? movie.genre.join(' / ') : (movie.genre || '');
+  const meta = [movie.year, movie.director, movie.rating, movie.runtime, genre].filter(Boolean).join(' · ');
+  return `
+  <section class="section" id="sec-movie">
+    <div class="section-header" style="border-bottom-color:${c.color};">
+      <h2>今日电影推荐</h2>
+      <span class="section-count">影史经典</span>
+    </div>
+    <div class="card" style="border-top:3px solid ${c.color};">
+      <div class="card-header">
+        <div class="card-title">《${movie.title}》 (${movie.year || ''})</div>
+      </div>
+      <div class="card-meta">
+        <span class="source-chip" style="background:${c.bg}; color:${c.color}">${meta}</span>
+      </div>
+      <p class="card-summary">${movie.synopsis || ''}</p>
+      <a class="card-link" href="movie-${dateStr}.html" style="color:${c.color}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        查看完整推荐 →
+      </a>
+      ${guide ? `<p class="card-summary" style="margin-top:6px;color:#7c3aed;font-weight:500">${guide}</p>` : ''}
+    </div>
+  </section>`;
+}
+
+function generateMoviePage(movie, dateStr) {
+  const c = { color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe' };
+  const genre = Array.isArray(movie.genre) ? movie.genre.join(' / ') : (movie.genre || '');
+  const highlights = Array.isArray(movie.highlights) ? movie.highlights : [];
+  const metaRows = [
+    ['年份', movie.year], ['导演', movie.director], ['评分', movie.rating],
+    ['片长', movie.runtime], ['类型', genre],
+  ].filter(r => r[1]);
+
+  const metaHTML = metaRows.map(([k, v]) => `
+      <div class="m-meta">
+        <span class="m-meta-label">${k}</span>
+        <span class="m-meta-value">${v}</span>
+      </div>`).join('');
+
+  const hlHTML = highlights.map(h => `<li>${h}</li>`).join('');
+
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今日电影推荐 · ${movie.title} (${movie.year || ''})</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#f5f6fa;color:#2d3436;line-height:1.6;min-height:100vh}
+.hero{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:#fff;padding:56px 24px 44px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 40% 40%,rgba(124,58,237,0.2) 0%,transparent 50%),radial-gradient(ellipse at 70% 30%,rgba(99,102,241,0.15) 0%,transparent 50%);pointer-events:none}
+.hero-content{position:relative;z-index:1;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-block;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:4px 16px;font-size:0.8rem;letter-spacing:0.05em;color:#c4b5fd;margin-bottom:18px;backdrop-filter:blur(10px)}
+.hero h1{font-size:2.2rem;font-weight:700;margin-bottom:10px;letter-spacing:-0.02em}
+.hero-year{font-size:1rem;color:#94a3b8;margin-bottom:14px}
+.hero-meta{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.hero-chip{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:5px 16px;font-size:0.8rem;color:#e2e8f0}
+.back-link{position:absolute;top:20px;left:20px;z-index:2;color:#94a3b8;text-decoration:none;font-size:0.85rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);padding:6px 14px;border-radius:20px;transition:all 0.2s}
+.back-link:hover{color:#fff;border-color:#c4b5fd}
+.main{max-width:800px;margin:0 auto;padding:36px 20px 56px}
+.section{background:#fff;border-radius:14px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,0.05);border:1px solid #f1f5f9;margin-bottom:20px}
+.section h3{font-size:0.95rem;font-weight:700;color:${c.color};margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section h3::before{content:'';width:6px;height:6px;border-radius:50%;background:${c.color};display:inline-block}
+.meta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.m-meta{background:${c.bg};border-radius:10px;padding:12px 16px}
+.m-meta-label{display:block;font-size:0.7rem;color:#94a3b8;margin-bottom:4px}
+.m-meta-value{font-size:0.92rem;font-weight:600;color:#1e293b}
+.synopsis p{font-size:0.95rem;color:#475569;line-height:1.8}
+.hl-list{list-style:none;padding:0}
+.hl-list li{position:relative;padding:8px 0 8px 22px;font-size:0.92rem;color:#475569;line-height:1.6}
+.hl-list li::before{content:'';position:absolute;left:4px;top:15px;width:8px;height:8px;border-radius:50%;background:${c.color};opacity:0.6}
+.why-box{background:linear-gradient(135deg,#f5f3ff 0%,#eef2ff 100%);border-radius:12px;padding:18px 22px;font-size:0.95rem;color:#334155;line-height:1.8}
+.audience-box{background:#f8fafc;border:1px dashed #e2e8f0;border-radius:12px;padding:16px 20px;font-size:0.92rem;color:#475569;line-height:1.7}
+.audience-box strong{color:${c.color}}
+.footer{text-align:center;padding:32px 16px;color:#94a3b8;font-size:0.8rem;border-top:1px solid #e2e8f0;margin-top:16px}
+@media(max-width:768px){
+  .hero{padding:44px 16px 36px}
+  .hero h1{font-size:1.6rem}
+  .main{padding:24px 14px 40px}
+  .section{padding:20px}
+}
+</style>
+</head>
+<body>
+<a class="back-link" href="index.html">← 返回首页</a>
+<header class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">AI HOT 每日晨报 · 今日电影推荐</div>
+    <h1>《${movie.title}》</h1>
+    <div class="hero-year">${movie.year || ''} · ${movie.director || ''}</div>
+    <div class="hero-meta">
+      ${movie.rating ? `<span class="hero-chip">⭐ ${movie.rating}</span>` : ''}
+      ${movie.runtime ? `<span class="hero-chip">⏱ ${movie.runtime}</span>` : ''}
+      ${genre ? `<span class="hero-chip">${genre}</span>` : ''}
+    </div>
+  </div>
+</header>
+<main class="main">
+  <div class="section">
+    <h3>剧情梗概</h3>
+    <div class="synopsis"><p>${movie.synopsis || ''}</p></div>
+  </div>
+  ${hlHTML ? `<div class="section"><h3>亮点所在</h3><ul class="hl-list">${hlHTML}</ul></div>` : ''}
+  ${movie.why ? `<div class="section"><h3>为什么值得一看</h3><div class="why-box">${movie.why}</div></div>` : ''}
+  ${movie.audience ? `<div class="section"><h3>观影建议</h3><div class="audience-box">${movie.audience}</div></div>` : ''}
+</main>
+<footer class="footer">
+  <p>今日电影推荐 · 数据来源：AI 精选 · 页面生成于 ${new Date().toLocaleString('zh-CN', {timeZone:'Asia/Shanghai'})}</p>
+</footer>
+</body>
+</html>`;
+}
+
 // ============= HTML Generation =============
-function generateHTML(data, fallbackNote, showDateNav = false, availableDates = []) {
+function generateHTML(data, fallbackNote, showDateNav = false, availableDates = [], movie = null) {
   const { daily, dateStr } = data;
   const sections = daily.sections || [];
   const sectionLabels = ['模型发布/更新', '产品发布/更新', '行业动态', '论文研究', '技巧与观点'];
@@ -232,6 +353,11 @@ function generateHTML(data, fallbackNote, showDateNav = false, availableDates = 
 ${sectionCards}
     </div>
   </section>`;
+  }
+
+  // Movie recommendation — appended after the last section (技巧与观点)
+  if (movie && dateStr) {
+    cardsHTML += movieCardHTML(movie, dateStr);
   }
 
   // Date display
@@ -377,9 +503,24 @@ async function main() {
     .map(f => f.replace('.html', ''))
     .sort((a, b) => b.localeCompare(a)); // descending
 
+  // Load today's movie recommendation (movie/YYYY-MM-DD.json), if present
+  const movieDir = path.join(REPO_DIR, 'movie');
+  let movie = null;
+  try {
+    const movieFile = path.join(movieDir, `${dateStr}.json`);
+    if (fs.existsSync(movieFile)) {
+      movie = JSON.parse(fs.readFileSync(movieFile, 'utf-8'));
+      console.log(`Movie: ${movie.title} (${movie.year || '未知年份'})`);
+    } else {
+      console.log('Movie: 无今日电影数据，跳过');
+    }
+  } catch (e) {
+    console.warn(`Movie: 读取失败，跳过（${e.message}）`);
+  }
+
   // Generate HTML — date page (no dropdown) and index page (with dropdown)
-  const htmlDate = generateHTML(data, fallbackNote, false, availableDates);
-  const htmlIndex = generateHTML(data, fallbackNote, true, availableDates);
+  const htmlDate = generateHTML(data, fallbackNote, false, availableDates, movie);
+  const htmlIndex = generateHTML(data, fallbackNote, true, availableDates, movie);
 
   // Write files
   const dateFile = path.join(REPO_DIR, `${dateStr}.html`);
@@ -391,9 +532,16 @@ async function main() {
   fs.writeFileSync(idxFile, htmlIndex, 'utf-8');
   console.log(`Written: ${idxFile}`);
 
+  // Movie independent page
+  if (movie) {
+    const moviePage = path.join(REPO_DIR, `movie-${dateStr}.html`);
+    fs.writeFileSync(moviePage, generateMoviePage(movie, dateStr), 'utf-8');
+    console.log(`Written: ${moviePage}`);
+  }
+
   // Git commit & push
   const { execSync } = await import('child_process');
-  execSync('git add *.html', { cwd: REPO_DIR });
+  execSync('git add *.html movie/', { cwd: REPO_DIR });
   execSync(`git commit -m "chore: AI daily report for ${dateStr}"`, { cwd: REPO_DIR });
   execSync('git push origin main', { cwd: REPO_DIR });
 
