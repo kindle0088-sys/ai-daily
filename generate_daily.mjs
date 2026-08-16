@@ -503,6 +503,13 @@ async function main() {
     .map(f => f.replace('.html', ''))
     .sort((a, b) => b.localeCompare(a)); // descending
 
+  // Ensure today's date is in the archive list (file is written later, so it
+  // wouldn't be picked up by the scan above)
+  if (!availableDates.includes(dateStr)) {
+    availableDates.push(dateStr);
+    availableDates.sort((a, b) => b.localeCompare(a));
+  }
+
   // Load today's movie recommendation (movie/YYYY-MM-DD.json), if present
   const movieDir = path.join(REPO_DIR, 'movie');
   let movie = null;
