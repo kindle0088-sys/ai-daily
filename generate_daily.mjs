@@ -62,6 +62,7 @@ async function fetchDaily() {
     fallbackNote = `今日(${todayStr})日报未生成，展示 ${yStr} 日报`;
   } else if (countItems(daily) < 3) {
     // Today has very few items (e.g. weekend) — merge with yesterday
+    const todayCount = countItems(daily);
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
     const yStr = yesterday.toISOString().slice(0, 10);
@@ -80,7 +81,7 @@ async function fetchDaily() {
       }
       daily.sections = mergedSections;
       merged = true;
-      fallbackNote = `今日(${todayStr})日报仅${countItems(daily)}条，合并昨日(${yStr})完整日报`;
+      fallbackNote = `今日(${todayStr})日报仅${todayCount}条，合并昨日(${yStr})完整日报`;
     }
   }
 
