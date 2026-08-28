@@ -227,7 +227,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 }
 
 // ============= HTML Generation =============
-function generateHTML(data, fallbackNote, showDateNav = false, availableDates = [], movie = null) {
+function generateHTML(data, fallbackNote, availableDates = [], movie = null) {
   const { daily, dateStr } = data;
   const sections = daily.sections || [];
   const sectionLabels = ['模型发布/更新', '产品发布/更新', '行业动态', '论文研究', '技巧与观点'];
@@ -297,9 +297,9 @@ function generateHTML(data, fallbackNote, showDateNav = false, availableDates = 
     navHTML += `<a href="#${sid}" class="nav-item">${so.label}</a>`;
   }
 
-  // Date archive dropdown (only on index page)
+  // Date archive dropdown (on every page for easy navigation)
   let dropdownHTML = '';
-  if (showDateNav && availableDates.length > 0) {
+  if (availableDates.length > 0) {
     const dateObj = new Date(dateStr + 'T00:00:00+08:00');
     const currentLabel = `${dateObj.getFullYear()}年${dateObj.getMonth() + 1}月${dateObj.getDate()}日`;
     let optionsHTML = '';
@@ -314,6 +314,23 @@ function generateHTML(data, fallbackNote, showDateNav = false, availableDates = 
       <select id="dateSelector" aria-label="选择日期">
         ${optionsHTML}
       </select>
+    </div>`;
+  }
+
+  // Prev/Next day navigation buttons (availableDates is sorted descending)
+  let prevNextHTML = '';
+  if (availableDates.length > 1) {
+    const idx = availableDates.indexOf(dateStr);
+    const prevDate = idx >= 0 && idx < availableDates.length - 1 ? availableDates[idx + 1] : null;
+    const nextDate = idx > 0 ? availableDates[idx - 1] : null;
+    prevNextHTML = `
+    <div class="nav-prevnext">
+      ${prevDate
+        ? `<a class="nav-pn-btn" href="${prevDate}.html" title="${prevDate}">← 前一天 (${prevDate.slice(5)})</a>`
+        : `<span class="nav-pn-btn disabled" title="没有更早的日报">← 前一天</span>`}
+      ${nextDate
+        ? `<a class="nav-pn-btn" href="${nextDate}.html" title="${nextDate}">后一天 (${nextDate.slice(5)}) →</a>`
+        : `<span class="nav-pn-btn disabled" title="没有更新的日报">后一天 →</span>`}
     </div>`;
   }
 
@@ -403,6 +420,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 .nav-date-select select{appearance:none;-webkit-appearance:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:6px 28px 6px 12px;font-size:0.8rem;color:#334155;cursor:pointer;font-family:inherit;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;min-width:130px}
 .nav-date-select select:hover{border-color:#c7d2fe}
 .nav-date-select select:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 2px rgba(99,102,241,0.15)}
+.nav-prevnext{display:flex;align-items:center;gap:6px;flex-shrink:0;padding:0 0 0 12px;border-left:1px solid #e2e8f0}
+.nav-pn-btn{display:inline-flex;align-items:center;padding:6px 12px;font-size:0.8rem;font-weight:500;color:#6366f1;background:#eef2ff;border-radius:8px;text-decoration:none;white-space:nowrap;transition:all 0.15s}
+.nav-pn-btn:hover{background:#e0e7ff}
+.nav-pn-btn.disabled{color:#cbd5e1;background:#f1f5f9;cursor:not-allowed;pointer-events:none}
 
 .main{max-width:1200px;margin:0 auto;padding:32px 16px 48px}
 .section{margin-bottom:40px}
@@ -436,6 +457,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
   .hero-stat .stat-num{font-size:1.2rem}
   .card-grid{grid-template-columns:1fr}
   .nav-item{padding:12px 14px;font-size:0.8rem}
+  .nav-pn-btn{padding:5px 10px;font-size:0.75rem}
   .nav-date-select select{min-width:120px;font-size:0.75rem;padding:5px 26px 5px 10px}
   .back-top{bottom:20px;right:20px}
 }
@@ -455,7 +477,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 </header>
 
 <nav class="nav-bar">
-  <div class="nav-inner">${navHTML}${dropdownHTML}</div>
+  <div class="nav-inner">${navHTML}${prevNextHTML}${dropdownHTML}</div>
 </nav>
 
 <main class="main">
@@ -526,9 +548,9 @@ async function main() {
     console.warn(`Movie: 读取失败，跳过（${e.message}）`);
   }
 
-  // Generate HTML — date page (no dropdown) and index page (with dropdown)
-  const htmlDate = generateHTML(data, fallbackNote, false, availableDates, movie);
-  const htmlIndex = generateHTML(data, fallbackNote, true, availableDates, movie);
+  // Generate HTML — date page and index page (both now carry prev/next + date nav)
+  const htmlDate = generateHTML(data, fallbackNote, availableDates, movie);
+  const htmlIndex = generateHTML(data, fallbackNote, availableDates, movie);
 
   // Write files
   const dateFile = path.join(REPO_DIR, `${dateStr}.html`);

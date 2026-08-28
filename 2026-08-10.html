@@ -68,6 +68,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
   .nav-date-select select{min-width:120px;font-size:0.75rem;padding:5px 26px 5px 10px}
   .back-top{bottom:20px;right:20px}
 }
+.nav-prevnext{display:flex;align-items:center;gap:6px;flex-shrink:0;padding:0 0 0 12px;border-left:1px solid #e2e8f0}
+.nav-pn-btn{display:inline-flex;align-items:center;padding:6px 12px;font-size:0.8rem;font-weight:500;color:#6366f1;background:#eef2ff;border-radius:8px;text-decoration:none;white-space:nowrap;transition:all 0.15s}
+.nav-pn-btn:hover{background:#e0e7ff}
+.nav-pn-btn.disabled{color:#cbd5e1;background:#f1f5f9;cursor:not-allowed;pointer-events:none}
+.nav-pn-btn{padding:5px 10px;font-size:0.75rem}
 </style>
 </head>
 <body>
@@ -88,7 +93,48 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 </header>
 
 <nav class="nav-bar">
-  <div class="nav-inner"><a href="#sec-tip" class="nav-item">技巧与观点</a></div>
+  <div class="nav-inner"><a href="#sec-tip" class="nav-item">技巧与观点</a>    <div class="nav-prevnext">
+      <a class="nav-pn-btn" href="2026-08-09.html" title="2026-08-09">← 前一天 (08-09)</a>
+      <a class="nav-pn-btn" href="2026-08-11.html" title="2026-08-11">后一天 (08-11) →</a>
+    </div>
+    <div class="nav-date-select">
+      <select id="dateSelector" aria-label="选择日期">
+        <option value="2026-08-28.html">2026年8月28日</option>
+        <option value="2026-08-27.html">2026年8月27日</option>
+        <option value="2026-08-26.html">2026年8月26日</option>
+        <option value="2026-08-25.html">2026年8月25日</option>
+        <option value="2026-08-24.html">2026年8月24日</option>
+        <option value="2026-08-23.html">2026年8月23日</option>
+        <option value="2026-08-22.html">2026年8月22日</option>
+        <option value="2026-08-21.html">2026年8月21日</option>
+        <option value="2026-08-20.html">2026年8月20日</option>
+        <option value="2026-08-19.html">2026年8月19日</option>
+        <option value="2026-08-18.html">2026年8月18日</option>
+        <option value="2026-08-17.html">2026年8月17日</option>
+        <option value="2026-08-16.html">2026年8月16日</option>
+        <option value="2026-08-15.html">2026年8月15日</option>
+        <option value="2026-08-14.html">2026年8月14日</option>
+        <option value="2026-08-13.html">2026年8月13日</option>
+        <option value="2026-08-12.html">2026年8月12日</option>
+        <option value="2026-08-11.html">2026年8月11日</option>
+        <option value="2026-08-10.html" selected>2026年8月10日 (当前)</option>
+        <option value="2026-08-09.html">2026年8月9日</option>
+        <option value="2026-08-08.html">2026年8月8日</option>
+        <option value="2026-08-07.html">2026年8月7日</option>
+        <option value="2026-08-05.html">2026年8月5日</option>
+        <option value="2026-08-04.html">2026年8月4日</option>
+        <option value="2026-08-03.html">2026年8月3日</option>
+        <option value="2026-08-02.html">2026年8月2日</option>
+        <option value="2026-08-01.html">2026年8月1日</option>
+        <option value="2026-07-31.html">2026年7月31日</option>
+        <option value="2026-07-30.html">2026年7月30日</option>
+        <option value="2026-07-29.html">2026年7月29日</option>
+        <option value="2026-07-28.html">2026年7月28日</option>
+        <option value="2026-07-27.html">2026年7月27日</option>
+        <option value="2026-07-26.html">2026年7月26日</option>
+      </select>
+    </div>
+</div>
 </nav>
 
 <main class="main">
