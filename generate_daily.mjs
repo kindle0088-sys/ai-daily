@@ -25,6 +25,26 @@ function safeDate(d) {
   return d.slice(0, 10);
 }
 
+// Local (Asia/Shanghai, UTC+8) calendar date — matches AIHOT's 北京时间 report date
+function movieDateStr() {
+  return new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+}
+
+// Movie JSON date resolution: prefer the local (北京时间) date, but fall back to
+// the report date. --movie-date=YYYY-MM-DD is an explicit override used when the
+// source report has not rolled over yet.
+function resolveMovieDate(reportDate) {
+  const arg = process.argv.find(a => a.startsWith('--movie-date='));
+  if (arg) return arg.split('=')[1];
+  const today = movieDateStr();
+  if (today === reportDate) return today;
+  const fsMod = require('fs');
+  const pathMod = require('path');
+  if (fsMod.existsSync(pathMod.join(REPO_DIR, 'movie', `${today}.json`))) return today;
+  if (fsMod.existsSync(pathMod.join(REPO_DIR, 'movie', `${reportDate}.json`))) return reportDate;
+  return today;
+}
+
 function truncate(text, max = 60) {
   if (!text) return '';
   // Remove extra whitespace
@@ -227,8 +247,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 }
 
 // ============= HTML Generation =============
-function generateHTML(data, fallbackNote, availableDates = [], movie = null) {
-  const { daily, dateStr } = data;
+function generateHTML(data, fallbackNote, availableDates = [], movie = null, dateOverride = null) {
+  const { daily } = data;
+  // Allow the caller to align the page date with the movie date (when the
+  // source report has not rolled over to the local date yet).
+  const dateStr = dateOverride || data.dateStr;
   const sections = daily.sections || [];
   const sectionLabels = ['模型发布/更新', '产品发布/更新', '行业动态', '论文研究', '技巧与观点'];
 
@@ -384,7 +407,9 @@ ${sectionCards}
 
   const noteHTML = fallbackNote
     ? `<div class="hero-note">${fallbackNote}</div>`
-    : '';
+    : (dateStr !== data.dateStr
+        ? `<div class="hero-note">今日(${dateStr})日报尚未发布，内容为 ${data.dateStr} 期日报</div>`
+        : '');
 
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -511,7 +536,8 @@ async function main() {
 
   // Fetch data
   const data = await fetchDaily();
-  const { dateStr, fallbackNote } = data;
+  const { fallbackNote } = data;
+  let { dateStr } = data;
 
   // Count total items
   const totalItems = (data.daily.sections || []).reduce((sum, s) => sum + (s.items || []).length, 0);
@@ -520,6 +546,27 @@ async function main() {
   // Scan available dates for archive dropdown
   const fs = await import('fs');
   const path = await import('path');
+
+  // Load today's movie recommendation (movie/YYYY-MM-DD.json), if present.
+  // Done before the archive scan so dateStr can be aligned with the movie date.
+  const movieDir = path.join(REPO_DIR, 'movie');
+  const movieFile = path.join(movieDir, `${resolveMovieDate(dateStr)}.json`);
+  let movie = null;
+  try {
+    console.log(`Movie file: ${movieFile} exists=${fs.existsSync(movieFile)}`);
+    if (fs.existsSync(movieFile)) {
+      movie = JSON.parse(fs.readFileSync(movieFile, 'utf-8'));
+      // Align the report date with the movie date so the card link
+      // (movie-${dateStr}.html) always resolves to the generated page.
+      if (movie.date) dateStr = movie.date;
+      console.log(`Movie: ${movie.title} (${movie.year || '未知年份'})`);
+    } else {
+      console.log('Movie: 无今日电影数据，跳过');
+    }
+  } catch (e) {
+    console.warn(`Movie: 读取失败，跳过（${e.message}）`);
+  }
+
   const allFiles = fs.readdirSync(REPO_DIR);
   const availableDates = allFiles
     .filter(f => /^\d{4}-\d{2}-\d{2}\.html$/.test(f))
@@ -533,24 +580,9 @@ async function main() {
     availableDates.sort((a, b) => b.localeCompare(a));
   }
 
-  // Load today's movie recommendation (movie/YYYY-MM-DD.json), if present
-  const movieDir = path.join(REPO_DIR, 'movie');
-  let movie = null;
-  try {
-    const movieFile = path.join(movieDir, `${dateStr}.json`);
-    if (fs.existsSync(movieFile)) {
-      movie = JSON.parse(fs.readFileSync(movieFile, 'utf-8'));
-      console.log(`Movie: ${movie.title} (${movie.year || '未知年份'})`);
-    } else {
-      console.log('Movie: 无今日电影数据，跳过');
-    }
-  } catch (e) {
-    console.warn(`Movie: 读取失败，跳过（${e.message}）`);
-  }
-
   // Generate HTML — date page and index page (both now carry prev/next + date nav)
-  const htmlDate = generateHTML(data, fallbackNote, availableDates, movie);
-  const htmlIndex = generateHTML(data, fallbackNote, availableDates, movie);
+  const htmlDate = generateHTML(data, fallbackNote, availableDates, movie, dateStr);
+  const htmlIndex = generateHTML(data, fallbackNote, availableDates, movie, dateStr);
 
   // Write files
   const dateFile = path.join(REPO_DIR, `${dateStr}.html`);
