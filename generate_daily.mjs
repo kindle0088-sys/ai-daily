@@ -9,7 +9,9 @@
  * 4. 提交并推送至 GitHub Pages 仓库
  */
 
-const API_BASE = 'https://aihot.virxact.com';
+const API_BASE = 'https://aihot.news';
+const API_BASE_LEGACY = 'https://aihot.virxact.com';
+const USE_LEGACY_API = process.env.AIHOT_API === 'legacy';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 const REPO_DIR = process.cwd();
 
@@ -59,25 +61,68 @@ function countItems(d) {
   return d.sections.reduce((s, sec) => s + (sec.items || []).length, 0);
 }
 
+// Normalize the current /api/v1 daily report into the legacy shape the rest of
+// this script expects ({date, generatedAt, lead, sections[], flashes[]}).
+function normalizeV1(report) {
+  if (!report) return null;
+  return {
+    date: report.date,
+    generatedAt: report.generatedAt,
+    lead: report.lead || null,
+    sections: (report.sections || []).map(sec => ({
+      label: sec.label,
+      items: (sec.items || []).map(it => ({
+        title: it.title || '',
+        summary: it.summary || '',
+        sourceName: (it.source && it.source.name) || '',
+        sourceUrl: (it.links && it.links.original) || (it.links && it.links.aihot) || '',
+        permalink: (it.links && it.links.aihot) || '',
+      })),
+    })),
+    flashes: (report.flashes || []).map(f => ({ title: f.title || '', text: f.text || '' })),
+  };
+}
+
+// GET a single daily report.
+// API v1 (default):   /api/v1/dailies/{date} | /api/v1/dailies/latest  → {schemaVersion, report}
+// Legacy (fallback):  /api/public/daily[/{date}]                      → report at top level
+async function getDaily(dateStr) {
+  if (!USE_LEGACY_API) {
+    const url = dateStr
+      ? `${API_BASE}/api/v1/dailies/${dateStr}`
+      : `${API_BASE}/api/v1/dailies/latest`;
+    const j = await fetchJSON(url);
+    if (j && j.report) return normalizeV1(j.report);
+    console.warn(`[warn] v1 endpoint returned no report: ${url}`);
+  }
+  const legacyUrl = dateStr
+    ? `${API_BASE_LEGACY}/api/public/daily/${dateStr}`
+    : `${API_BASE_LEGACY}/api/public/daily`;
+  return fetchJSON(legacyUrl);
+}
+
+function hasItems(d) {
+  return Boolean(d && d.sections && d.sections.some(s => (s.items || []).length > 0));
+}
+
 async function fetchDaily() {
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
 
   // Try today's daily first
-  let daily = await fetchJSON(`${API_BASE}/api/public/daily`);
+  let daily = await getDaily();
   let dateStr = todayStr;
   let merged = false;
   let fallbackNote = '';
 
-  const isEmpty = !daily || !daily.sections || daily.sections.length === 0 ||
-    daily.sections.every(s => !s.items || s.items.length === 0);
+  const isEmpty = !hasItems(daily);
 
   if (isEmpty) {
     // Try yesterday
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
     const yStr = yesterday.toISOString().slice(0, 10);
-    daily = await fetchJSON(`${API_BASE}/api/public/daily/${yStr}`);
+    daily = await getDaily(yStr);
     dateStr = yStr;
     fallbackNote = `今日(${todayStr})日报未生成，展示 ${yStr} 日报`;
   } else if (countItems(daily) < 3) {
@@ -86,7 +131,7 @@ async function fetchDaily() {
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
     const yStr = yesterday.toISOString().slice(0, 10);
-    const yDaily = await fetchJSON(`${API_BASE}/api/public/daily/${yStr}`);
+    const yDaily = await getDaily(yStr);
     if (yDaily && yDaily.sections && countItems(yDaily) > 0) {
       // Merge: today's items go first in each section, then yesterday's
       const mergedSections = [];
@@ -106,12 +151,11 @@ async function fetchDaily() {
   }
 
   // If still no data, try day before yesterday
-  if (!daily || !daily.sections || daily.sections.length === 0 ||
-      daily.sections.every(s => !s.items || s.items.length === 0)) {
+  if (!hasItems(daily)) {
     const twoDaysAgo = new Date(today);
     twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
     const tStr = twoDaysAgo.toISOString().slice(0, 10);
-    daily = await fetchJSON(`${API_BASE}/api/public/daily/${tStr}`);
+    daily = await getDaily(tStr);
     if (daily && daily.sections) {
       dateStr = tStr;
       fallbackNote = `最近三日均无完整日报，展示 ${tStr} 数据`;
@@ -125,13 +169,18 @@ async function fetchDaily() {
   return { daily, dateStr, fallbackNote, merged };
 }
 
-// ============= Movie Recommendation =============
+// 日报页卡片只展示「片名 + 年份 + 一句导语」+ 完整推荐入口；
+// 完整剧情梗概与观影建议留在独立页（movie-YYYY-MM-DD.html），避免入口卡片过于臃肿。
 function movieCardHTML(movie, dateStr) {
   if (!movie) return '';
   const c = { color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe' };
-  const guide = movie.audience || '';
   const genre = Array.isArray(movie.genre) ? movie.genre.join(' / ') : (movie.genre || '');
   const meta = [movie.year, movie.director, movie.rating, movie.runtime, genre].filter(Boolean).join(' · ');
+  const pick = (s, max) => {
+    const clean = String(s || '').replace(/\s+/g, ' ').trim();
+    return clean.length <= max ? clean : clean.slice(0, max) + '…';
+  };
+  const lead = pick(movie.why || movie.synopsis || '', 96);
   return `
   <section class="section" id="sec-movie">
     <div class="section-header" style="border-bottom-color:${c.color};">
@@ -145,12 +194,11 @@ function movieCardHTML(movie, dateStr) {
       <div class="card-meta">
         <span class="source-chip" style="background:${c.bg}; color:${c.color}">${meta}</span>
       </div>
-      <p class="card-summary">${movie.synopsis || ''}</p>
+      <p class="card-summary">${lead}</p>
       <a class="card-link" href="movie-${dateStr}.html" style="color:${c.color}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         查看完整推荐 →
       </a>
-      ${guide ? `<p class="card-summary" style="margin-top:6px;color:#7c3aed;font-weight:500">${guide}</p>` : ''}
     </div>
   </section>`;
 }
@@ -510,7 +558,7 @@ ${cardsHTML}
 </main>
 
 <footer class="footer">
-  <p>共 <strong>${total}</strong> 条 AI 动态 · 数据来源：<strong>AI HOT</strong>（aihot.virxact.com）· 自动生成于 ${new Date().toLocaleString('zh-CN', {timeZone:'Asia/Shanghai'})}</p>
+  <p>共 <strong>${total}</strong> 条 AI 动态 · 数据来源：<strong>AI HOT</strong>（aihot.news）· 自动生成于 ${new Date().toLocaleString('zh-CN', {timeZone:'Asia/Shanghai'})}</p>
 </footer>
 
 <button class="back-top" id="backTop" title="回到顶部">↑</button>
