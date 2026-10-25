@@ -146,6 +146,11 @@ async function fetchDaily() {
       }
       daily.sections = mergedSections;
       merged = true;
+      // 合并后页面顶部的 lead 必须来自「今日」条目，否则会挂着昨日的头条
+      const todayFirst = mergedSections[0] && mergedSections[0].items[0];
+      if (todayFirst) {
+        daily.lead = { title: todayFirst.title, leadParagraph: todayFirst.summary };
+      }
       fallbackNote = `今日(${todayStr})日报仅${todayCount}条，合并昨日(${yStr})完整日报`;
     }
   }
