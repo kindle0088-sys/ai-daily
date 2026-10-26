@@ -112,22 +112,58 @@ async function fetchDaily() {
   // Try today's daily first
   let daily = await getDaily();
   let dateStr = todayStr;
+  let quietEmpty = false;
   let merged = false;
   let fallbackNote = '';
 
   const isEmpty = !hasItems(daily);
 
+  // 源侧「无大事发生」型空日报：sections 为空但 lead 明确说明今日无事
+  const quietLead = Boolean(daily && daily.lead && /无大事|安静|暂无/.test(daily.lead.title || ''));
+  const quietTodayEmpty = Boolean(daily && daily.date === todayStr && quietLead);
+
   if (isEmpty) {
-    // Try yesterday
+    // 今日 0 条：先看是不是「源侧明确表示无事发生」（有 date 但 sections 为空），
+    // 这种情况仍保留今日页（lead 用源侧原话），只把昨日日报作为「昨日回顾」补在下面，
+    // 而不是整页回退到昨日——否则日期与页面内容会错位一天。
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
     const yStr = yesterday.toISOString().slice(0, 10);
-    daily = await getDaily(yStr);
-    dateStr = yStr;
-    fallbackNote = `今日(${todayStr})日报未生成，展示 ${yStr} 日报`;
+    // 今日日报对象存在（有 date 字段）即视为「今日已发布」，哪怕 sections 为空
+    const quietToday = Boolean(daily && daily.date === todayStr);
+    void quietTodayEmpty;
+
+    if (quietToday) {
+      const yDaily = await getDaily(yStr);
+      if (yDaily && yDaily.sections) {
+        const labelOrder = ['模型发布/更新', '产品发布/更新', '行业动态', '论文研究', '技巧与观点'];
+        const mergedSections = [];
+        for (const label of labelOrder) {
+          const yItems = (yDaily.sections.find(s => s.label === label) || {}).items || [];
+          if (yItems.length > 0) {
+            mergedSections.push({ label: `${label}（${yStr} 回顾）`, items: yItems });
+          }
+        }
+        daily.sections = mergedSections;
+        merged = true;
+        quietEmpty = true;
+        fallbackNote = `今日(${todayStr})暂无新增 AI 资讯，下方为 ${yStr} 日报回顾`;
+      } else {
+        daily.sections = [];
+        quietEmpty = true;
+        fallbackNote = `今日(${todayStr})暂无新增 AI 资讯`;
+      }
+    } else {
+      // 今日日报压根没生成：回退到昨日
+      daily = await getDaily(yStr);
+      dateStr = yStr;
+      fallbackNote = `今日(${todayStr})日报未生成，展示 ${yStr} 日报`;
+    }
   } else if (countItems(daily) < 3) {
     // Today has very few items (e.g. weekend) — merge with yesterday
     const todayCount = countItems(daily);
+    // 今日不足 3 条时，若源侧标题就是「无大事发生」，不当成有内容的日报
+    const todayIsQuiet = Boolean(daily.lead && /无大事|安静|暂无/.test(daily.lead.title || ''));
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
     const yStr = yesterday.toISOString().slice(0, 10);
@@ -151,7 +187,14 @@ async function fetchDaily() {
       if (todayFirst) {
         daily.lead = { title: todayFirst.title, leadParagraph: todayFirst.summary };
       }
-      fallbackNote = `今日(${todayStr})日报仅${todayCount}条，合并昨日(${yStr})完整日报`;
+      // 源侧明确「无大事发生」的极少量条目，实质是昨日数据被重复计入，
+      // 不当作今日独立条目，只保留「昨日回顾」的口径（须放在设置 lead 之后覆盖）
+      if (todayIsQuiet) {
+        quietEmpty = true;
+        fallbackNote = `今日(${todayStr})暂无新增 AI 资讯，下方为 ${yStr} 日报回顾`;
+      } else {
+        fallbackNote = `今日(${todayStr})日报仅${todayCount}条，合并昨日(${yStr})完整日报`;
+      }
     }
   }
 
@@ -171,7 +214,7 @@ async function fetchDaily() {
     throw new Error('No daily data available after fallback');
   }
 
-  return { daily, dateStr, fallbackNote, merged };
+  return { daily, dateStr, fallbackNote, merged, quietEmpty };
 }
 
 // 日报页卡片只展示「片名 + 年份 + 一句导语」+ 完整推荐入口；
@@ -311,13 +354,18 @@ function generateHTML(data, fallbackNote, availableDates = [], movie = null, dat
   // Build section map
   const sectionMap = {};
   for (const s of sections) {
-    sectionMap[s.label] = (s.items || []).map(item => ({
-      title: item.title || '',
-      summary: truncate(item.summary || ''),
-      sourceUrl: item.sourceUrl || '',
-      sourceName: item.sourceName || '',
-      is_today: false,
-    }));
+    // 「回顾」章节的 label 形如「行业动态（2026-10-25 回顾）」，需归一到标准 label
+    const baseLabel = sectionLabels.find(l => s.label === l || s.label.startsWith(l)) || s.label;
+    const list = sectionMap[baseLabel] || (sectionMap[baseLabel] = []);
+    for (const item of (s.items || [])) {
+      list.push({
+        title: item.title || '',
+        summary: truncate(item.summary || ''),
+        sourceUrl: item.sourceUrl || '',
+        sourceName: item.sourceName || '',
+        is_today: false,
+      });
+    }
   }
 
   // Build ordered items with global numbering
@@ -458,7 +506,7 @@ ${sectionCards}
   const dateObj = new Date(dateStr + 'T00:00:00+08:00');
   const dateDisplay = `${dateObj.getFullYear()}年${dateObj.getMonth() + 1}月${dateObj.getDate()}日`;
 
-  const noteHTML = fallbackNote
+  const noteHTML = (data.quietEmpty && total===0) ? '<div class="hero-note">今日暂无新增 AI 资讯，明日再来</div>' : fallbackNote
     ? `<div class="hero-note">${fallbackNote}</div>`
     : (dateStr !== data.dateStr
         ? `<div class="hero-note">今日(${dateStr})日报尚未发布，内容为 ${data.dateStr} 期日报</div>`
@@ -634,6 +682,7 @@ async function main() {
   }
 
   // Generate HTML — date page and index page (both now carry prev/next + date nav)
+  data.quietEmpty = Boolean(data.quietEmpty);
   const htmlDate = generateHTML(data, fallbackNote, availableDates, movie, dateStr);
   const htmlIndex = generateHTML(data, fallbackNote, availableDates, movie, dateStr);
 
