@@ -159,36 +159,34 @@ async function fetchDaily() {
       dateStr = yStr;
       fallbackNote = `今日(${todayStr})日报未生成，展示 ${yStr} 日报`;
     }
-  } else if (countItems(daily) < 3) {
-    // Today has very few items (e.g. weekend) — merge with yesterday
-    const todayCount = countItems(daily);
-    // 今日不足 3 条时，若源侧标题就是「无大事发生」，不当成有内容的日报
+  }
+  // ---- 周末清淡日合并：今日不足 3 条时补上昨日完整日报 ----
+  const todayItemCount = countItems(daily);
+  const isSparse = !isEmpty && (todayItemCount === 1 || todayItemCount === 2);
+  if (!isSparse && !isEmpty && todayItemCount === 3 && !fallbackNote) {
+    // 今日恰好 3 条（源侧清淡日）：保留当日页，但明确告知资讯偏少
+    fallbackNote = `今日(${todayStr})资讯较清淡，仅 ${todayItemCount} 条`;
+  }
+  if (isSparse) {
+    const todayCount = todayItemCount;
     const todayIsQuiet = Boolean(daily.lead && /无大事|安静|暂无/.test(daily.lead.title || ''));
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yStr = yesterday.toISOString().slice(0, 10);
+    const yDate = new Date(today);
+    yDate.setDate(yDate.getDate() - 1);
+    const yStr = yDate.toISOString().slice(0, 10);
     const yDaily = await getDaily(yStr);
     if (yDaily && yDaily.sections && countItems(yDaily) > 0) {
-      // Merge: today's items go first in each section, then yesterday's
-      const mergedSections = [];
       const labelOrder = ['模型发布/更新', '产品发布/更新', '行业动态', '论文研究', '技巧与观点'];
+      const mergedSections = [];
       for (const label of labelOrder) {
         const todayItems = (daily.sections.find(s => s.label === label) || {}).items || [];
         const yItems = (yDaily.sections.find(s => s.label === label) || {}).items || [];
         const merged_ = [...todayItems, ...yItems];
-        if (merged_.length > 0) {
-          mergedSections.push({ label, items: merged_ });
-        }
+        if (merged_.length > 0) mergedSections.push({ label, items: merged_ });
       }
       daily.sections = mergedSections;
       merged = true;
-      // 合并后页面顶部的 lead 必须来自「今日」条目，否则会挂着昨日的头条
       const todayFirst = mergedSections[0] && mergedSections[0].items[0];
-      if (todayFirst) {
-        daily.lead = { title: todayFirst.title, leadParagraph: todayFirst.summary };
-      }
-      // 源侧明确「无大事发生」的极少量条目，实质是昨日数据被重复计入，
-      // 不当作今日独立条目，只保留「昨日回顾」的口径（须放在设置 lead 之后覆盖）
+      if (todayFirst) daily.lead = { title: todayFirst.title, leadParagraph: todayFirst.summary };
       if (todayIsQuiet) {
         quietEmpty = true;
         fallbackNote = `今日(${todayStr})暂无新增 AI 资讯，下方为 ${yStr} 日报回顾`;
@@ -197,6 +195,7 @@ async function fetchDaily() {
       }
     }
   }
+
 
   // If still no data, try day before yesterday
   if (!hasItems(daily)) {
